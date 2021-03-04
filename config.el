@@ -76,41 +76,21 @@
 %i
 %a" :prepend t)
        ("n" "Personal notes" entry
-        (file+headline +org-capture-notes-file "Inbox")
+        (file+headline "~/org/notes.org" "Notes")
         "* %u %?
 %i
 %a" :prepend t)
-       ("j" "Journal" entry
-        (file+olp+datetree +org-capture-journal-file)
-        "* %U %?
+       ("c" "Cours communs" entry
+        (file+headline "~/org/roam/cours/cours_index.org" "Communs")
+        "* %?
 %i
-%a" :prepend t)
-       ("p" "Templates for projects")
-       ("pt" "Project-local todo" entry
-        (file+headline +org-capture-project-todo-file "Inbox")
-        "* TODO %?
+%a" :jump-to-captured t)
+       ("s" "Cours SRS" entry
+        (file+headline "~/org/roam/cours/cours_index.org" "SRS")
+        "* %?
 %i
-%a" :prepend t)
-       ("pn" "Project-local notes" entry
-        (file+headline +org-capture-project-notes-file "Inbox")
-        "* %U %?
-%i
-%a" :prepend t)
-       ("pc" "Project-local changelog" entry
-        (file+headline +org-capture-project-changelog-file "Unreleased")
-        "* %U %?
-%i
-%a" :prepend t)
-       ("o" "Centralized templates for projects")
-       ("ot" "Project todo" entry #'+org-capture-central-project-todo-file "* TODO %?
- %i
- %a" :heading "Tasks" :prepend nil)
-       ("on" "Project notes" entry #'+org-capture-central-project-notes-file "* %U %?
- %i
- %a" :heading "Notes" :prepend t)
-       ("oc" "Project changelog" entry #'+org-capture-central-project-changelog-file "* %U %?
- %i
- %a" :heading "Changelog" :prepend t)))
+%a" :jump-to-captured t)))
+
 
 ;; Custom dailies templates
 (setq org-roam-dailies-capture-templates
@@ -127,6 +107,7 @@
          :file-name "daily/%<%Y-%m-%d>"
          :head "#+TITLE: %<%Y-%m-%d>\n"
          :olp ("Notes generales"))))
+
 
 ;; Custom org roam capture templates
 (setq org-roam-capture-templates
@@ -204,6 +185,7 @@
       ("cours" :components ("cours-note" "cours-static"))
       ("misc" :components ("misc-note" "misc-static"))
       ))
+
 
 ;; Force pushing even if files didn't change
 (setq org-publish-use-timestamps-flag 'nil)
