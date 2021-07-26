@@ -66,30 +66,41 @@
 ;; Org capture templates
 (setq org-capture-templates
       '(("t" "Personal todo" entry
-        (file+headline +org-capture-todo-file "Misc")
-        "* [ ] %?
+         (file+headline +org-capture-todo-file "Misc")
+         "* [ ] %?
 %i
 %a" :prepend t)
-       ("i" "Important todo" entry
-        (file+headline +org-capture-todo-file "Cours")
-        "* [ ] %?
+        ("i" "Important todo" entry
+         (file+headline +org-capture-todo-file "Cours")
+         "* [ ] %?
 %i
 %a" :prepend t)
-       ("n" "Personal notes" entry
-        (file+headline "~/org/notes.org" "Notes")
-        "* %u %?
+        ("n" "Personal notes" entry
+         (file+headline "~/org/notes.org" "Notes")
+         "* %u %?
 %i
 %a" :prepend t)
-       ("c" "Cours communs" entry
-        (file+headline "~/org/roam/cours/cours_index.org" "Communs")
-        "* %?
+        ("c" "Cours communs" entry
+         (file+headline "~/org/roam/cours/cours_index.org" "Communs")
+         "* %?
 %i
 %a" :jump-to-captured t)
-       ("s" "Cours SRS" entry
-        (file+headline "~/org/roam/cours/cours_index.org" "SRS")
-        "* %?
+        ("s" "Cours SRS" entry
+         (file+headline "~/org/roam/cours/cours_index.org" "SRS")
+         "* %?
 %i
-%a" :jump-to-captured t)))
+%a" :jump-to-captured t)
+        ("v" "Veille SRS" entry
+         (file+headline "~/org/veille.org" "Veille SRS")
+         "* [ ] %u [[%x][%?]]
+%i
+%a" :prepend t)
+        ("m" "Veille TCOM" entry
+         (file+headline "~/org/veille.org" "Veille TCOM")
+         "* [ ] %u [[%x][%?]]
+%i
+%a" :prepend t)
+        ))
 
 
 ;; Custom dailies templates
@@ -189,3 +200,12 @@
 
 ;; Force pushing even if files didn't change
 (setq org-publish-use-timestamps-flag 'nil)
+
+(require 'ox-latex)
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+(setq org-latex-listings 'minted)
+
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
