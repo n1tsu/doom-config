@@ -49,20 +49,6 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-(use-package org-download
-  :after org
-  :bind
-  (:map org-mode-map
-        (("s-Y" . org-download-screenshot)
-         ("s-y" . org-download-yank))))
-
-(package! simple-httpd)
-(package! org-roam-server
-  :recipe (:host github :repo "org-roam/org-roam-server"))
-
-
-;; Change org mode bullet
-(use-package org-bullets
-  :hook (org-mode . org-bullets-mode)
-  :config
-  (setq org-bullets-bullet-list '("◉" "⁑" "⁂" "❖" "✮" "✱" "✸")))
+ (package! simple-httpd)
+ (package! org-roam-server
+   :recipe (:host github :repo "org-roam/org-roam-server"))
