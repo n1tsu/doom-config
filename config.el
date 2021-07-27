@@ -25,12 +25,14 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-monokai-spectrum)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-(add-hook 'after-init-hook 'org-roam-mode)
+(setq org-roam-directory "~/org/roam")
+
+;; (add-hook 'after-init-hook 'org-roam-mode)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -105,53 +107,46 @@
 
 ;; Custom dailies templates
 (setq org-roam-dailies-capture-templates
-      '(("c" "cours" entry
-         #'org-roam-capture--get-point
-         "* %?"
-         :file-name "daily/%<%Y-%m-%d>"
-         :head "#+TITLE: %<%Y-%m-%d>\n"
+      '(("c" "cours" entry "* %?"
+         :if-new (file+head "daily/%<%Y-%m-%d>.org"
+         "#+TITLE: %<%Y-%m-%d>\n")
          :olp ("Notes de cours"))
 
-        ("m" "misc" entry
-         #'org-roam-capture--get-point
-         "* %?"
-         :file-name "daily/%<%Y-%m-%d>"
+        ("m" "misc" entry "* %?"
+         :file-name "daily/%<%Y-%m-%d>.org"
          :head "#+TITLE: %<%Y-%m-%d>\n"
          :olp ("Notes generales"))))
 
 
 ;; Custom org roam capture templates
 (setq org-roam-capture-templates
-      '(("d" "default" plain (function org-roam-capture--get-point)
-         "%?"
-         :file-name "${slug}"
-         :head "#+TITLE: ${title}\n
-#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]"
+      '(("d" "default" plain "%?"
+         :if-new (file+head "${slug}.org"
+                            "#+TITLE: ${title}\n
+#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]")
          :unnarrowed t)
-        ("c" "cours" plain (function org-roam-capture--get-point)
-         "%?"
-         :file-name "cours/${slug}"
-         :head "#+TITLE: ${title}
+        ("c" "cours" plain "%?"
+         :if-new (file+head "cours/${slug}.org"
+         "#+TITLE: ${title}
 #+DATE: %U
 #+PROFESSOR: %^{PROF|FIXME}
 #+ROAM_TAGS: cours
 
 #+INFOJS_OPT: view:info toc:nil
 #+HTML_LINK_HOME: cours_index.html
-#+HTML_LINK_LINK_UP: cours_index.html"
+#+HTML_LINK_LINK_UP: cours_index.html")
          :unnarrowed t)
-        ("m" "misc" plain (function org-roam-capture--get-point)
-         "%?"
-         :file-name "misc/${slug}"
-         :head "#+TITLE: ${title}\n
+        ("m" "misc" plain "%?"
+         :if-new (file+head "misc/${slug}.org"
+         "#+TITLE: ${title}\n
 #+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
 #+ROAM_TAGS: misc
 
 #+INFOJS_OPT: view:info toc:nil
 #+HTML_LINK_HOME: misc_index.html
-#+HTML_LINK_LINK_UP: misc_index.html'"
+#+HTML_LINK_LINK_UP: misc_index.html'")
          :unnarrowed t)
-        ))
+))
 
 ;; Add publish project
 (require 'ox-publish)
