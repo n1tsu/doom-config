@@ -49,7 +49,4 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
- (package! org-roam)
- (package! simple-httpd)
- (package! org-roam-server
-   :recipe (:host github :repo "org-roam/org-roam-server"))
+(package! org-roam)

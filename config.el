@@ -6,7 +6,7 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
-(setq user-full-name "Augusin Thiercelin"
+(setq user-full-name "Augustin Thiercelin"
       user-mail-address "augustin.thiercelin@epita.fr")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
@@ -21,7 +21,6 @@
 ;; font string. You generally only need these two:
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
-
 (setq doom-font (font-spec :family "Fira Mono" :size 18 :weight 'semi-light)
       doom-variable-pitch-font (font-spec :family "Fira Mono" :size 20))
 
@@ -33,13 +32,11 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-(setq org-roam-directory "~/org/roam")
-
-;; (add-hook 'after-init-hook 'org-roam-mode)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
+
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -58,55 +55,95 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(set-face-attribute 'default nil :height 120)
 
-(setq gnus-select-method '(nntp "news.epita.fr"))
+;;;;;;;;;;;;;;
+;; PERSONAL ;;
+;;;;;;;;;;;;;;
 
-(setq send-mail-function		'smtpmail-send-it
-      message-send-mail-function	'smtpmail-send-it
-      smtpmail-smtp-server		"smtp.office365.com")
 
-(setq org-export-with-email t)
+;;;;;;;;;
+;; ORG ;;
+;;;;;;;;;
 
 ;; Org capture templates
 (setq org-capture-templates
       '(("t" "Personal todo" entry
          (file+headline +org-capture-todo-file "Misc")
-         "* [ ] %?
-%i
-%a" :prepend t)
+         "* [ ] %?\n%i\n%a"
+         :prepend t)
         ("i" "Important todo" entry
          (file+headline +org-capture-todo-file "Cours")
-         "* [ ] %?
-%i
-%a" :prepend t)
+         "* [ ] %?\n%i\n%a"
+         :prepend t)
         ("n" "Personal notes" entry
          (file+headline "~/org/notes.org" "Notes")
-         "* %u %?
-%i
-%a" :prepend t)
+         "* %u %?\n%i\n%a"
+         :prepend t)
         ("c" "Cours communs" entry
          (file+headline "~/org/roam/cours/cours_index.org" "Communs")
-         "* %?
-%i
-%a" :jump-to-captured t)
+         "* %?\n%i\n%a"
+         :jump-to-captured t)
         ("s" "Cours SRS" entry
          (file+headline "~/org/roam/cours/cours_index.org" "SRS")
-         "* %?
-%i
-%a" :jump-to-captured t)
+         "* %?\n%i\n%a"
+         :jump-to-captured t)
         ("v" "Veille SRS" entry
          (file+headline "~/org/veille.org" "Veille SRS")
-         "* [ ] %u [[%x][%?]]
-%i
-%a" :prepend t)
+         "* [ ] %u [[%x][%?]]\n%i\n%a" :prepend t)
         ("m" "Veille TCOM" entry
          (file+headline "~/org/veille.org" "Veille TCOM")
-         "* [ ] %u [[%x][%?]]
-%i
-%a" :prepend t)
-        ))
+         "* [ ] %u [[%x][%?]]\n%i\n%a"
+         :prepend t)))
 
+
+
+;;;;;;;;;;;;;;
+;; ORG-ROAM ;;
+;;;;;;;;;;;;;;
+
+;; org roam configuration
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory (file-truename "~/org/roam/"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (org-roam-setup))
+
+;; Custom org roam capture templates
+(setq org-roam-capture-templates
+      '(("d" "default" plain "%?"
+         :if-new (file+head "${slug}.org"
+                            "#+TITLE: ${title}\n
+#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]")
+         :unnarrowed t)
+        ("c" "cours" plain "%?"
+         :if-new (file+head "cours/${slug}.org"
+                            "#+TITLE: ${title}
+#+DATE: %U
+#+PROFESSOR: %^{PROF|FIXME}
+#+ROAM_TAGS: cours
+#+INFOJS_OPT: view:info toc:nil
+#+HTML_LINK_HOME: cours_index.html
+#+HTML_LINK_LINK_UP: cours_index.html")
+         :unnarrowed t)
+        ("m" "misc" plain "%?"
+         :if-new (file+head "misc/${slug}.org"
+                            "#+TITLE: ${title}\n
+#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
+#+ROAM_TAGS: misc
+#+INFOJS_OPT: view:info toc:nil
+#+HTML_LINK_HOME: misc_index.html
+#+HTML_LINK_LINK_UP: misc_index.html'")
+         :unnarrowed t)))
 
 ;; Custom dailies templates
 (setq org-roam-dailies-capture-templates
@@ -121,80 +158,45 @@
          :olp ("Notes generales"))))
 
 
-;; Custom org roam capture templates
-(setq org-roam-capture-templates
-      '(("d" "default" plain "%?"
-         :if-new (file+head "${slug}.org"
-                            "#+TITLE: ${title}\n
-#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]")
-         :unnarrowed t)
-        ("c" "cours" plain "%?"
-         :if-new (file+head "cours/${slug}.org"
-         "#+TITLE: ${title}
-#+DATE: %U
-#+PROFESSOR: %^{PROF|FIXME}
-#+ROAM_TAGS: cours
 
-#+INFOJS_OPT: view:info toc:nil
-#+HTML_LINK_HOME: cours_index.html
-#+HTML_LINK_LINK_UP: cours_index.html")
-         :unnarrowed t)
-        ("m" "misc" plain "%?"
-         :if-new (file+head "misc/${slug}.org"
-         "#+TITLE: ${title}\n
-#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
-#+ROAM_TAGS: misc
-
-#+INFOJS_OPT: view:info toc:nil
-#+HTML_LINK_HOME: misc_index.html
-#+HTML_LINK_LINK_UP: misc_index.html'")
-         :unnarrowed t)
-))
+;;;;;;;;;;;;;
+;; PUBLISH ;;
+;;;;;;;;;;;;;
 
 ;; Add publish project
 (require 'ox-publish)
 (setq org-publish-project-alist
       '(
-;; Cours
-      ("cours-note"
-      :base-directory "~/org/roam/cours"
-      :base-extension "org"
-      :publishing-directory "~/cours/public_html/"
-      :recursive t
-;;      :auto-sitemap t
-      :publishing-function org-html-publish-to-html
-      :headline-levels 4             ; Just the default for this project.
-      :auto-preamble t
-      )
-      ("cours-static"
-      :base-directory "~/org/roam/cours"
-      :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
-      :publishing-directory "~/cours/public_html/"
-      :recursive t
-      :publishing-function org-publish-attachment
-      )
-;; Misc
-      ("misc-note"
-      :base-directory "~/org/roam/misc"
-      :base-extension "org"
-      :publishing-directory "~/misc/public_html/"
-      :recursive t
-;;      :auto-sitemap t
-      :publishing-function org-html-publish-to-html
-      :headline-levels 4             ; Just the default for this project.
-      :auto-preamble t
-      )
-      ("misc-static"
-      :base-directory "~/org/roam/misc"
-      :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
-      :publishing-directory "~/misc/public_html/"
-      :recursive t
-      :publishing-function org-publish-attachment
-      )
-      ("cours" :components ("cours-note" "cours-static"))
-      ("misc" :components ("misc-note" "misc-static"))
-      ))
-
+        ("cours-note"
+         :base-directory "~/org/roam/cours"
+         :base-extension "org"
+         :publishing-directory "~/cours/public_html/"
+         :recursive t
+         :publishing-function org-html-publish-to-html
+         :headline-levels 4
+         :auto-preamble t)
+        ("cours-static"
+         :base-directory "~/org/roam/cours"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+         :publishing-directory "~/cours/public_html/"
+         :recursive t
+         :publishing-function org-publish-attachment)
+        ("misc-note"
+         :base-directory "~/org/roam/misc"
+         :base-extension "org"
+         :publishing-directory "~/misc/public_html/"
+         :recursive t
+         :publishing-function org-html-publish-to-html
+         :headline-levels 4
+         :auto-preamble t)
+        ("misc-static"
+         :base-directory "~/org/roam/misc"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+         :publishing-directory "~/misc/public_html/"
+         :recursive t
+         :publishing-function org-publish-attachment)
+        ("cours" :components ("cours-note" "cours-static"))
+        ("misc" :components ("misc-note" "misc-static"))))
 
 ;; Force pushing even if files didn't change
 (setq org-publish-use-timestamps-flag 'nil)
@@ -207,36 +209,3 @@
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-
-
-(use-package org-download
-  :after org
-  :bind
-  (:map org-mode-map
-   (("s-Y" . org-download-screenshot)
-    ("s-y" . org-download-yank))))
-
-
-;; Change org mode bullet
-;; (use-package org-bullets
-;;   :hook (org-mode . org-bullets-mode)
-;;   :config
-;;   (setq org-bullets-bullet-list '("◉" "⁑" "⁂" "❖" "✮" "✱" "✸")))
-
-
- (use-package org-roam
-        :ensure t
-        :init
-        (setq org-roam-v2-ack t)
-        :custom
-        (org-roam-directory (file-truename "~/org/roam/"))
-        :bind (("C-c n l" . org-roam-buffer-toggle)
-               ("C-c n f" . org-roam-node-find)
-               ("C-c n g" . org-roam-graph)
-               ("C-c n i" . org-roam-node-insert)
-               ("C-c n c" . org-roam-capture)
-               ;; Dailies
-               ("C-c n j" . org-roam-dailies-capture-today))
-        :config
-        (org-roam-setup)
-)
