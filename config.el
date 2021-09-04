@@ -23,11 +23,11 @@
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 (setq doom-font (font-spec :family "Fira Mono" :size 18 :weight 'semi-light)
       doom-variable-pitch-font (font-spec :family "Fira Mono" :size 20))
-
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-monokai-spectrum)
+;;(setq doom-theme 'doom-monokai-spectrum)
+(setq doom-theme 'doom-palenight)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -67,18 +67,29 @@
 
 ;; Org capture templates
 (setq org-capture-templates
+      ;; Create new entry in org/todo.org in corresponding section
       '(("t" "Personal todo" entry
-         (file+headline +org-capture-todo-file "Misc")
+         (file+headline +org-capture-todo-file "MISC")
          "* [ ] %?\n%i\n%a"
          :prepend t)
-        ("i" "Important todo" entry
-         (file+headline +org-capture-todo-file "Cours")
+        ("i" "SRS todo" entry
+         (file+headline +org-capture-todo-file "SRS")
          "* [ ] %?\n%i\n%a"
          :prepend t)
+        ("a" "ACU todo" entry
+         (file+headline +org-capture-todo-file "ACU")
+         "* [ ] %?\n%i\n%a"
+         :prepend t)
+        ("p" "PROLOGIN todo" entry
+         (file+headline +org-capture-todo-file "PROLOGIN")
+         "* [ ] %?\n%i\n%a"
+         :prepend t)
+        ;; Create new entry in org/notes.org
         ("n" "Personal notes" entry
          (file+headline "~/org/notes.org" "Notes")
          "* %u %?\n%i\n%a"
          :prepend t)
+        ;; Add new entry in org/roam/cours/cours_index.org
         ("c" "Cours communs" entry
          (file+headline "~/org/roam/cours/cours_index.org" "Communs")
          "* %?\n%i\n%a"
@@ -87,9 +98,11 @@
          (file+headline "~/org/roam/cours/cours_index.org" "SRS")
          "* %?\n%i\n%a"
          :jump-to-captured t)
+        ;; Add new entry in org/veille.org with clipboard
         ("v" "Veille SRS" entry
          (file+headline "~/org/veille.org" "Veille SRS")
-         "* [ ] %u [[%x][%?]]\n%i\n%a" :prepend t)
+         "* [ ] %u [[%x][%?]]\n%i\n%a"
+         :prepend t)
         ("m" "Veille TCOM" entry
          (file+headline "~/org/veille.org" "Veille TCOM")
          "* [ ] %u [[%x][%?]]\n%i\n%a"
@@ -130,7 +143,7 @@
                             "#+TITLE: ${title}
 #+DATE: %U
 #+PROFESSOR: %^{PROF|FIXME}
-#+ROAM_TAGS: cours
+#+filetags: :cours:
 #+INFOJS_OPT: view:info toc:nil
 #+HTML_LINK_HOME: cours_index.html
 #+HTML_LINK_LINK_UP: cours_index.html")
@@ -139,7 +152,7 @@
          :if-new (file+head "misc/${slug}.org"
                             "#+TITLE: ${title}\n
 #+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
-#+ROAM_TAGS: misc
+#+filetags: :misc:
 #+INFOJS_OPT: view:info toc:nil
 #+HTML_LINK_HOME: misc_index.html
 #+HTML_LINK_LINK_UP: misc_index.html'")
