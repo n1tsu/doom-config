@@ -28,8 +28,8 @@
 ;; `load-theme' function. This is the default:
 ;;(setq doom-theme 'doom-monokai-spectrum)
 ;;(setq doom-theme 'doom-solarized-light)
-;;(setq doom-theme 'doom-palenight)
-(setq doom-theme 'spacemacs-light)
+(setq doom-theme 'doom-palenight)
+;;(setq doom-theme 'spacemacs-light)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -304,119 +304,130 @@
   (interactive)
   ;; https://lepisma.xyz/2017/10/28/ricing-org-mode/
   (custom-set-faces!
-    '(org-document-title
+    `(org-document-title
       :inherit nil
       :family "ETBembo"
       :height 1.8
-      :foreground "black"
+      :foreground ,org-foreground
       :underline nil)
-    '(org-document-info
+    `(org-document-info
       :height 1.2
       :slant italic)
-    '(org-level-1
+    `(org-level-1
       :inherit nil
       :family "ETBembo"
       :height 1.6
       :weight normal
       :slant normal
-      :foreground "black")
-    '(org-level-2
+      :foreground ,org-foreground)
+    `(org-level-2
       :inherit nil
       :family "ETBembo"
       :weight normal
       :height 1.3
       :slant italic
-      :foreground "black")
-    '(org-level-3
+      :foreground ,org-foreground)
+    `(org-level-3
       :inherit nil
       :family "ETBembo"
       :weight normal
       :slant italic
       :height 1.2
-      :foreground "black")
-    '(org-level-4
+      :foreground ,org-foreground)
+    `(org-level-4
       :inherit nil
       :family "ETBembo"
       :weight normal
       :slant italic
       :height 1.1
-      :foreground "black")
-    '(org-level-5
+      :foreground ,org-foreground)
+    `(org-level-5
       :inherit nil
       :family "ETBembo"
       :weight normal
       :slant italic
       :height 1.0
-      :foreground "black")
-    '(org-headline-done
+      :foreground ,org-foreground)
+    `(org-headline-done
       :family "ETBembo"
       :strike-through t)
-    '(org-block
+    `(org-block
       :background nil
-      :foreground "black")
-    '(org-block-begin-line
-      :background nil
-      :height 0.8
-      :family "sans-mono-font"
-      :foreground "slate")
-    '(org-block-end-line
+      :foreground ,org-foreground)
+    `(org-block-begin-line
       :background nil
       :height 0.8
       :family "sans-mono-font"
       :foreground "slate")
-    '(org-document-info-keyword
+    `(org-block-end-line
+      :background nil
+      :height 0.8
+      :family "sans-mono-font"
+      :foreground "slate")
+    `(org-document-info-keyword
       :height 0.8
       :foreground "gray")
-    '(org-link
-      :foreground "black")
-    '(org-special-keyword
+    `(org-link
+      :foreground ,org-foreground)
+    `(org-special-keyword
       :family "sans-mono-font"
       :foreground "gray"
       :height 0.8)
-    '(org-hide
-      :foreground "white")
-    '(org-indent
+    `(org-hide
+      :foreground ,org-background)
+    `(org-indent
       :inherit (org-hide fixed-pitch))
-    '(org-date
+    `(org-date
       :family "sans-mono-font"
       :height 0.8)
-    '(org-agenda-date
+    `(org-agenda-date
       :inherit nil
       :height 1.1)
-    '(org-agenda-done
+    `(org-agenda-done
       :strike-through t
       :foreground "doc")
-    '(org-ellipsis
+    `(org-ellipsis
       :underline nil
       :foreground "comment")
-    '(org-tag
+    `(org-tag
       :foreground "doc")
-    '(org-table
+    `(org-table
       :family "serif-mono-font"
       :height 0.9
-      :background "white")
-    '(org-code
+      :background ,org-background)
+    `(org-code
       :inherit nil
       :family "serif-mono-font"
       :foreground "comment"
       :height 0.9)
-    '(org-meta-line
+    `(org-meta-line
       :foreground "gray"
       :inherit org-document-info-keyword)
-    '(org-drawer
+    `(org-drawer
       :foreground "gray"
       :inherit org-document-info-keyword)
-    '(org-property-value
+    `(org-property-value
       :foreground "gray"
       :inherit org-document-info-keyword)
-    '(variable-pitch
+    `(variable-pitch
       :family "ETBembo")
     )
   )
 
-(book-faces "black" "white")
+(book-faces "white" "black")
 
-
+(defun swap-theme ()
+  "Swap dark and light theme"
+  (interactive)
+  (if (eq doom-theme 'doom-palenight)
+      (progn
+        (load-theme 'spacemacs-light)
+        (book-faces "black" "white"))
+    (progn
+      (load-theme 'doom-palenight)
+      (book-faces "white" "black"))
+    )
+  )
 
 ;;;;;;;;;;;
 ;; EBOOK ;;
