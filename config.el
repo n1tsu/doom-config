@@ -27,7 +27,9 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;;(setq doom-theme 'doom-monokai-spectrum)
-(setq doom-theme 'doom-palenight)
+;;(setq doom-theme 'doom-solarized-light)
+;;(setq doom-theme 'doom-palenight)
+(setq doom-theme 'spacemacs-light)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -268,3 +270,157 @@
          ("C-c C-k" . dw/org-present-prev))
   :hook ((org-present-mode . dw/org-present-hook)
          (org-present-mode-quit . dw/org-present-quit-hook)))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;; ORG CUSTOMIZATION ;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
+(after! org
+  (setq org-superstar-headline-bullets-list '(" ")))
+(add-hook 'org-mode-hook 'org-superstar-mode)
+
+(setq org-startup-indented t
+      line-spacing 0.1
+      org-bullets-bullet-list '(" ") ;; no bullets, needs org-bullets package
+      org-ellipsis "  " ;; folding symbol
+      org-pretty-entities t
+      org-hide-emphasis-markers t
+      ;; show actually italicized text instead of /italicized text/
+      org-agenda-block-separator ""
+      org-fontify-whole-heading-line t
+      org-fontify-done-headline t
+      org-fontify-quote-and-verse-blocks t)
+
+;; (invert-face)
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+
+(use-package! org-pretty-table
+  :commands (org-pretty-table-mode global-org-pretty-table-mode))
+
+(defun book-faces (org-foreground org-background)
+  "Change org-faces"
+  (interactive)
+  ;; https://lepisma.xyz/2017/10/28/ricing-org-mode/
+  (custom-set-faces!
+    '(org-document-title
+      :inherit nil
+      :family "ETBembo"
+      :height 1.8
+      :foreground "black"
+      :underline nil)
+    '(org-document-info
+      :height 1.2
+      :slant italic)
+    '(org-level-1
+      :inherit nil
+      :family "ETBembo"
+      :height 1.6
+      :weight normal
+      :slant normal
+      :foreground "black")
+    '(org-level-2
+      :inherit nil
+      :family "ETBembo"
+      :weight normal
+      :height 1.3
+      :slant italic
+      :foreground "black")
+    '(org-level-3
+      :inherit nil
+      :family "ETBembo"
+      :weight normal
+      :slant italic
+      :height 1.2
+      :foreground "black")
+    '(org-level-4
+      :inherit nil
+      :family "ETBembo"
+      :weight normal
+      :slant italic
+      :height 1.1
+      :foreground "black")
+    '(org-level-5
+      :inherit nil
+      :family "ETBembo"
+      :weight normal
+      :slant italic
+      :height 1.0
+      :foreground "black")
+    '(org-headline-done
+      :family "ETBembo"
+      :strike-through t)
+    '(org-block
+      :background nil
+      :foreground "black")
+    '(org-block-begin-line
+      :background nil
+      :height 0.8
+      :family "sans-mono-font"
+      :foreground "slate")
+    '(org-block-end-line
+      :background nil
+      :height 0.8
+      :family "sans-mono-font"
+      :foreground "slate")
+    '(org-document-info-keyword
+      :height 0.8
+      :foreground "gray")
+    '(org-link
+      :foreground "black")
+    '(org-special-keyword
+      :family "sans-mono-font"
+      :foreground "gray"
+      :height 0.8)
+    '(org-hide
+      :foreground "white")
+    '(org-indent
+      :inherit (org-hide fixed-pitch))
+    '(org-date
+      :family "sans-mono-font"
+      :height 0.8)
+    '(org-agenda-date
+      :inherit nil
+      :height 1.1)
+    '(org-agenda-done
+      :strike-through t
+      :foreground "doc")
+    '(org-ellipsis
+      :underline nil
+      :foreground "comment")
+    '(org-tag
+      :foreground "doc")
+    '(org-table
+      :family "serif-mono-font"
+      :height 0.9
+      :background "white")
+    '(org-code
+      :inherit nil
+      :family "serif-mono-font"
+      :foreground "comment"
+      :height 0.9)
+    '(org-meta-line
+      :foreground "gray"
+      :inherit org-document-info-keyword)
+    '(org-drawer
+      :foreground "gray"
+      :inherit org-document-info-keyword)
+    '(org-property-value
+      :foreground "gray"
+      :inherit org-document-info-keyword)
+    '(variable-pitch
+      :family "ETBembo")
+    )
+  )
+
+(book-faces "black" "white")
+
+
+
+;;;;;;;;;;;
+;; EBOOK ;;
+;;;;;;;;;;;
+
+(setq calibredb-root-dir "~/Calibre Library"
+      calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))

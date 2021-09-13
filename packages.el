@@ -50,3 +50,16 @@
 ;(unpin! t)
 
 (package! org-roam)
+(package! org-present)
+(package! org-pomodoro)
+(package! pastebin)
+(package! powershell)
+(package! pinentry)
+(package! org-superstar)
+(package! spacemacs-theme)
+(package! info-colors)
+(package! nov)
+(package! calibredb)
+
+(package! org-pretty-table
+  :recipe (:host github :repo "Fuco1/org-pretty-table") :pin "87772a9469d91770f87bfa788580fca69b9e697a")
