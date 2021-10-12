@@ -21,14 +21,15 @@
 ;; font string. You generally only need these two:
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
-(setq doom-font (font-spec :family "Fira Mono" :size 18 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Fira Mono" :size 20))
+(setq doom-font (font-spec :family "Fira Mono" :size 20 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Fira Mono" :size 22))
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;;(setq doom-theme 'doom-monokai-spectrum)
 ;;(setq doom-theme 'doom-solarized-light)
-(setq doom-theme 'doom-palenight)
+;;(setq doom-theme 'doom-palenight)
+(setq doom-theme 'doom-vibrant)
 ;;(setq doom-theme 'spacemacs-light)
 
 ;; If you use `org' and don't want your org files in the default location below,
@@ -61,7 +62,6 @@
 ;;;;;;;;;;;;;;
 ;; PERSONAL ;;
 ;;;;;;;;;;;;;;
-
 
 ;;;;;;;;;
 ;; ORG ;;
@@ -137,7 +137,7 @@
 (setq org-roam-capture-templates
       '(("d" "default" plain "%?"
          :if-new (file+head "${slug}.org"
-                            "#+TITLE: ${title}\n
+                            "#+TITLE: ${title}
 #+DATE: [%<%Y-%m-%d %j %H:%M:%S>]")
          :unnarrowed t)
         ("c" "cours" plain "%?"
@@ -145,16 +145,16 @@
                             "#+TITLE: ${title}
 #+DATE: %U
 #+PROFESSOR: %^{PROF|FIXME}
-#+filetags: :cours:
+#+FILETAGS: :cours:
 #+INFOJS_OPT: view:info toc:nil
 #+HTML_LINK_HOME: cours_index.html
 #+HTML_LINK_LINK_UP: cours_index.html")
          :unnarrowed t)
         ("m" "misc" plain "%?"
          :if-new (file+head "misc/${slug}.org"
-                            "#+TITLE: ${title}\n
+                            "#+TITLE: ${title}
 #+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
-#+filetags: :misc:
+#+FILETAGS: :misc:
 #+INFOJS_OPT: view:info toc:nil
 #+HTML_LINK_HOME: misc_index.html
 #+HTML_LINK_LINK_UP: misc_index.html'")
@@ -277,10 +277,12 @@
 ;; ORG CUSTOMIZATION ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Remove bullets headline
 (after! org
   (setq org-superstar-headline-bullets-list '(" ")))
 (add-hook 'org-mode-hook 'org-superstar-mode)
 
+;; Multiple display configuration
 (setq org-startup-indented t
       line-spacing 0.1
       org-bullets-bullet-list '(" ") ;; no bullets, needs org-bullets package
@@ -293,20 +295,19 @@
       org-fontify-done-headline t
       org-fontify-quote-and-verse-blocks t)
 
-;; (invert-face)
 (add-hook 'org-mode-hook 'variable-pitch-mode)
 
 (use-package! org-pretty-table
   :commands (org-pretty-table-mode global-org-pretty-table-mode))
 
-(defun book-faces (org-foreground org-background)
+(defun book-faces (org-foreground org-background font)
   "Change org-faces"
   (interactive)
   ;; https://lepisma.xyz/2017/10/28/ricing-org-mode/
   (custom-set-faces!
     `(org-document-title
       :inherit nil
-      :family "ETBembo"
+      :family ,font
       :height 1.8
       :foreground ,org-foreground
       :underline nil)
@@ -315,44 +316,46 @@
       :slant italic)
     `(org-level-1
       :inherit nil
-      :family "ETBembo"
+      :family ,font
       :height 1.6
       :weight normal
       :slant normal
       :foreground ,org-foreground)
     `(org-level-2
       :inherit nil
-      :family "ETBembo"
+      :family ,font
       :weight normal
       :height 1.3
       :slant italic
       :foreground ,org-foreground)
     `(org-level-3
       :inherit nil
-      :family "ETBembo"
+      :family ,font
       :weight normal
       :slant italic
       :height 1.2
       :foreground ,org-foreground)
     `(org-level-4
       :inherit nil
-      :family "ETBembo"
+      :family ,font
       :weight normal
       :slant italic
       :height 1.1
       :foreground ,org-foreground)
     `(org-level-5
       :inherit nil
-      :family "ETBembo"
+      :family ,font
       :weight normal
       :slant italic
       :height 1.0
       :foreground ,org-foreground)
     `(org-headline-done
-      :family "ETBembo"
+      :family ,font
       :strike-through t)
     `(org-block
       :background nil
+      :family "Fira Mono"
+      :height 0.7
       :foreground ,org-foreground)
     `(org-block-begin-line
       :background nil
@@ -410,28 +413,53 @@
       :foreground "gray"
       :inherit org-document-info-keyword)
     `(variable-pitch
-      :family "ETBembo")
+      :family ,font)
     )
   )
 
-(book-faces "white" "black")
+(book-faces "white" "black" "Fira Mono")
 
 (defun swap-theme ()
   "Swap dark and light theme"
   (interactive)
-  (if (eq doom-theme 'doom-palenight)
+  (if (eq doom-theme 'doom-vibrant)
       (progn
         (load-theme 'spacemacs-light)
-        (book-faces "black" "white"))
+        (book-faces "black" "white" "ETBembo"))
     (progn
-      (load-theme 'doom-palenight)
-      (book-faces "white" "black"))
+      (load-theme 'doom-vibrant)
+      (book-faces "white" "black" "Fira Mono"))
     )
   )
 
-;;;;;;;;;;;
-;; EBOOK ;;
-;;;;;;;;;;;
 
-(setq calibredb-root-dir "~/Calibre Library"
-      calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+
+;;;;;;;;;;;;;;;;;;
+;; CENTAUR-TABS ;;
+;;;;;;;;;;;;;;;;;;
+
+(setq centaur-tabs-set-bar 'under)
+(setq x-underline-at-descent-line t)
+
+(map! :leader :desc "Switch to next group" "t n" #'centaur-tabs-forward-group
+      :leader :desc "Switch to previous group" "t p" #'centaur-tabs-backward-group
+      :leader :desc "Create a new tab" "t t" #'centaur-tabs--create-new-tab
+      :leader :desc "List groups" "t g" #'centaur-tabs-counsel-switch-group
+      :leader :desc "Kill this buffer" "t k" #'centaur-tabs--kill-this-buffer-dont-ask
+      :leader :desc "Kill all buffers in group" "t a" #'centaur-tabs-kill-all-buffers-in-current-group
+      :leader :desc "Kill all buffers in group except current" "t e" #'centaur-tabs-kill-other-buffers-in-current-group)
+
+
+
+;;;;;;;;;;;;;;
+;; TREEMACS ;;
+;;;;;;;;;;;;;;
+
+(setq treemacs-width 25)
+
+(add-hook 'org-mode-hook (lambda ()
+   "Beautify Org Checkbox Symbol"
+   (push '("[ ]" .  "☐") prettify-symbols-alist)
+   (push '("[X]" . "☑" ) prettify-symbols-alist)
+   (push '("[-]" . "❍" ) prettify-symbols-alist)
+   (prettify-symbols-mode)))
