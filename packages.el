@@ -64,6 +64,7 @@
 (package! floobits)
 (package! meson-mode)
 (package! pomodoro)
+(package! org-msg)
 
 (package! org-pretty-table
   :recipe (:host github :repo "Fuco1/org-pretty-table") :pin "87772a9469d91770f87bfa788580fca69b9e697a")

@@ -482,10 +482,22 @@
     (mu4e-drafts-folder     . "/Drafts")
     (mu4e-trash-folder      . "/Trash")
     (mu4e-refile-folder     . "/INBOX")
+    (mu4e-compose-signature . "Augustin Thiercelin")
     (smtpmail-smtp-user     . "augustin.thiercelin@epita.fr")
-    (user-mail-address      . "augustin.thiercelin@epita.fr")
-    (mu4e-compose-signature . "-- \nAugustin Thiercelin"))
+    (user-mail-address      . "augustin.thiercelin@epita.fr"))
   t)
 
+(set-variable 'read-mail-command 'mu4e)
+(setq message-kill-buffer-on-exit t)
+(setq mail-user-agent 'mu4e-user-agent)
 (setq mu4e-compose--org-msg-toggle-next nil)
+(setq mu4e-compose-signature-auto-include t)
 (setq gnus-select-method '(nntp "news.epita.fr"))
+
+(setq smtpmail-smtp-server "smtp.office365.com"
+      smtpmail-stream-type 'starttls
+      smtpmail-smtp-service 587)
+
+(remove-hook! 'mu4e-compose-pre-hook #'org-msg-mode)
+
+(display-battery-mode 1)
