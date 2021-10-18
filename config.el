@@ -67,6 +67,17 @@
 ;; ORG ;;
 ;;;;;;;;;
 
+;; Org prettify checkbox
+(add-hook 'org-mode-hook (lambda ()
+   "Beautify Org Checkbox Symbol"
+   (push '("[ ]" .  "☐") prettify-symbols-alist)
+   (push '("[X]" . "☑" ) prettify-symbols-alist)
+   (push '("[-]" . "❍" ) prettify-symbols-alist)
+   (prettify-symbols-mode)))
+
+;; Export properties
+(setq org-export-with-properties t)
+
 ;; Org capture templates
 (setq org-capture-templates
       ;; Create new entry in org/todo.org in corresponding section
@@ -457,9 +468,24 @@
 
 (setq treemacs-width 25)
 
-(add-hook 'org-mode-hook (lambda ()
-   "Beautify Org Checkbox Symbol"
-   (push '("[ ]" .  "☐") prettify-symbols-alist)
-   (push '("[X]" . "☑" ) prettify-symbols-alist)
-   (push '("[-]" . "❍" ) prettify-symbols-alist)
-   (prettify-symbols-mode)))
+
+
+;;;;;;;;;;;;;;;
+;; MAIL/NEWS ;;
+;;;;;;;;;;;;;;;
+
+(setq +mu4e-backend 'offlineimap)
+
+;; Les paths sont relatifs a Mu
+(set-email-account! "epita.fr"
+  '((mu4e-sent-folder       . "/Sent")
+    (mu4e-drafts-folder     . "/Drafts")
+    (mu4e-trash-folder      . "/Trash")
+    (mu4e-refile-folder     . "/INBOX")
+    (smtpmail-smtp-user     . "augustin.thiercelin@epita.fr")
+    (user-mail-address      . "augustin.thiercelin@epita.fr")
+    (mu4e-compose-signature . "-- \nAugustin Thiercelin"))
+  t)
+
+(setq mu4e-compose--org-msg-toggle-next nil)
+(setq gnus-select-method '(nntp "news.epita.fr"))
