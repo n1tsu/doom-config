@@ -1,6 +1,5 @@
 #+TITLE: Config
 
-* Config
 This is my Doom Emacs configuration files. They are greatly inspired from various sources:
 - [[https://lepisma.xyz/2017/10/28/ricing-org-mode/][Ricing up Org mode - Abhinav Tushar]]
 - [[https://github.com/alarsyo/doom-conf][Alarsyo Github]]
