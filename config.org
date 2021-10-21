@@ -504,8 +504,6 @@ Set the smtp configuration to send mail
 (setq smtpmail-smtp-server "smtp.office365.com"
       smtpmail-stream-type 'starttls
       smtpmail-smtp-service 587)
-
-(remove-hook! 'mu4e-compose-pre-hook #'org-msg-mode)
 #+end_src
 
 Remove org-msg-mode when writing a mail. This mode is nice since it permits
