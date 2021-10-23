@@ -59,9 +59,9 @@ Add margin and remove line indications
 (setq visual-fill-column-width 110
       visual-fill-column-center-text t)
 
-(add-hook 'org-mode (lambda () (display-line-numbers-mode 0)))
-(add-hook 'org-mode 'visual-fill-column-mode)
-(add-hook 'org-mode 'auto-fill-mode)
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode 0)))
+(add-hook 'org-mode-hook 'visual-fill-column-mode)
+(add-hook 'org-mode-hook 'auto-fill-mode)
 #+end_src
 
 Export with properties.
