@@ -5,7 +5,7 @@ This is my Doom Emacs configuration files. They are greatly inspired from variou
 - [[https://github.com/alarsyo/doom-conf][Alarsyo Github]]
 - [[https://config.daviwil.com/emacs][daviwil configuration]]
 
-** General configuration
+* General configuration
 
 Enable lexical binding.
 #+begin_SRC emacs-lisp
@@ -36,7 +36,7 @@ Determine style of line numbers and display battery in mode bar.
 (setq display-line-numbers-type t)
 #+end_src
 
-** Org
+* Org
 
 Modify check-boxes inside org files.
 #+begin_src emacs-lisp
@@ -46,6 +46,16 @@ Modify check-boxes inside org files.
    (push '("[X]" . "☑" ) prettify-symbols-alist)
    (push '("[-]" . "❍" ) prettify-symbols-alist)
    (prettify-symbols-mode)))
+#+end_src
+
+Add margin and remove line indications
+#+begin_src emacs-lisp
+(setq visual-fill-column-width 110
+      visual-fill-column-center-text t)
+
+(add-hook 'org-mode (lambda () (display-line-numbers-mode 0)))
+(add-hook 'org-mode 'visual-fill-column-mode)
+(add-hook 'org-mode 'auto-fill-mode)
 #+end_src
 
 Export with properties.
@@ -105,7 +115,7 @@ Add captures templates for org:
          :prepend t)))
 #+end_src
 
-** Org-roam
+* Org-roam
 
 Basic configuration for roam, enabling version 2, setting the directory and
 adding some bindings.
@@ -176,7 +186,7 @@ Add templates for roam-daily:
          :olp ("Notes generales"))))
 #+end_src
 
-** Publish
+* Publish
 
 Setup two project to publish:
 - *cours* exporting all org-roam files with ressources from *~/org/roam/cours*
@@ -234,7 +244,7 @@ Honestly, I don't remember those lines
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 #+end_src
 
-** Presentation
+* Presentation
 
 Basic configuration for present-mode, stolen from daviwil configuration
 #+begin_src emacs-lisp
@@ -278,12 +288,12 @@ Basic configuration for present-mode, stolen from daviwil configuration
          (org-present-mode-quit . dw/org-present-quit-hook)))
 #+end_src
 
-** Org customization
+* Org customization
 
 Remove bullets headline
 #+begin_src emacs-lisp
 (after! org
-  (setq org-superstar-headline-bullets-list '(" ")))
+  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 (add-hook 'org-mode-hook 'org-superstar-mode)
 #+end_src
 
@@ -314,116 +324,38 @@ theme uses spacemacs-light. Then faces are modified.
 (defun book-faces (org-foreground org-background font)
   "Change org-faces"
   (interactive)
+
+  (dolist (face '((org-level-1 normal 1.6)
+                  (org-level-2 italic 1.3)
+                  (org-level-3 italic 1.2)
+                  (org-level-4 italic 1.1)
+                  (org-level-5 italic 1.0)))
+    (set-face-attribute `((nth 0 face) :inherit nil :family ,font :weight normal :slant (nth 1 face)
+                         :height (nth 2 face) :foreground ,org-foreground)))
+
   (custom-set-faces!
-    `(org-document-title
-      :inherit nil
-      :family ,font
-      :height 1.8
-      :foreground ,org-foreground
-      :underline nil)
-    `(org-document-info
-      :height 1.2
-      :slant italic)
-    `(org-level-1
-      :inherit nil
-      :family ,font
-      :height 1.6
-      :weight normal
-      :slant normal
-      :foreground ,org-foreground)
-    `(org-level-2
-      :inherit nil
-      :family ,font
-      :weight normal
-      :height 1.3
-      :slant italic
-      :foreground ,org-foreground)
-    `(org-level-3
-      :inherit nil
-      :family ,font
-      :weight normal
-      :slant italic
-      :height 1.2
-      :foreground ,org-foreground)
-    `(org-level-4
-      :inherit nil
-      :family ,font
-      :weight normal
-      :slant italic
-      :height 1.1
-      :foreground ,org-foreground)
-    `(org-level-5
-      :inherit nil
-      :family ,font
-      :weight normal
-      :slant italic
-      :height 1.0
-      :foreground ,org-foreground)
-    `(org-headline-done
-      :family ,font
-      :strike-through t)
-    `(org-block
-      :background nil
-      :family "Fira Mono"
-      :height 0.7
-      :foreground ,org-foreground)
-    `(org-block-begin-line
-      :background nil
-      :height 0.8
-      :family "sans-mono-font"
-      :foreground "slate")
-    `(org-block-end-line
-      :background nil
-      :height 0.8
-      :family "sans-mono-font"
-      :foreground "slate")
-    `(org-document-info-keyword
-      :height 0.8
-      :foreground "gray")
-    `(org-link
-      :foreground ,org-foreground)
-    `(org-special-keyword
-      :family "sans-mono-font"
-      :foreground "gray"
-      :height 0.8)
-    `(org-hide
-      :foreground ,org-background)
-    `(org-indent
-      :inherit (org-hide fixed-pitch))
-    `(org-date
-      :family "sans-mono-font"
-      :height 0.8)
-    `(org-agenda-date
-      :inherit nil
-      :height 1.1)
-    `(org-agenda-done
-      :strike-through t
-      :foreground "doc")
-    `(org-ellipsis
-      :underline nil
-      :foreground "comment")
-    `(org-tag
-      :foreground "doc")
-    `(org-table
-      :family "serif-mono-font"
-      :height 0.9
-      :background ,org-background)
-    `(org-code
-      :inherit nil
-      :family "serif-mono-font"
-      :foreground "comment"
-      :height 0.9)
-    `(org-meta-line
-      :foreground "gray"
-      :inherit org-document-info-keyword)
-    `(org-drawer
-      :foreground "gray"
-      :inherit org-document-info-keyword)
-    `(org-property-value
-      :foreground "gray"
-      :inherit org-document-info-keyword)
-    `(variable-pitch
-      :family ,font)
+    `(org-document-title :inherit nil :family ,font :height 1.8 :foreground ,org-foreground :underline nil)
+    `(org-document-info :height 1.2 :slant italic)
+    `(org-headline-done :family ,font :strike-through t)
+    `(org-block :background nil :family "Fira Mono" :height 0.7 :foreground ,org-foreground)
+    `(org-block-begin-line :background nil :height 0.8 :family "sans-mono-font" :foreground "slate")
+    `(org-block-end-line :background nil :height 0.8 :family "sans-mono-font" :foreground "slate")
+    `(org-document-info-keyword :height 0.8 :foreground "gray")
+    `(org-link :foreground ,org-foreground)
+    `(org-special-keyword :family "sans-mono-font" :foreground "gray" :height 0.8)
+    `(org-hide :foreground ,org-background)
+    `(org-indent :inherit (org-hide fixed-pitch))
+    `(org-date :family "sans-mono-font" :height 0.8)
+    `(org-agenda-date :inherit nil :height 1.1)
+    `(org-agenda-done :strike-through t :foreground "doc")
+    `(org-ellipsis :underline nil :foreground "comment")
+    `(org-tag :foreground "doc")
+    `(org-table :family "serif-mono-font" :height 0.9 :background ,org-background)
+    `(org-code :inherit nil :family "serif-mono-font" :foreground "comment" :height 0.9)
+    `(org-meta-line :foreground "gray" :inherit org-document-info-keyword)
+    `(org-drawer :foreground "gray" :inherit org-document-info-keyword)
+    `(org-property-value :foreground "gray" :inherit org-document-info-keyword)
+    `(variable-pitch :family ,font)
     )
   )
 
@@ -434,6 +366,7 @@ theme uses spacemacs-light. Then faces are modified.
   (interactive)
   (if (eq doom-theme 'doom-vibrant)
       (progn
+        (setq org-superstar-headline-bullets-list '(" "))
         (load-theme 'spacemacs-light)
         (book-faces "black" "white" "ETBembo"))
     (progn
@@ -443,7 +376,7 @@ theme uses spacemacs-light. Then faces are modified.
   )
 #+end_src
 
-** Centaur-tabs
+* Centaur-tabs
 
 Modify visual tabs bar.
 #+begin_src emacs-lisp
@@ -462,14 +395,14 @@ Add bindings to navigate groups and tab.
       :leader :desc "Kill all buffers in group except current" "t e" #'centaur-tabs-kill-other-buffers-in-current-group)
 #+end_src
 
-** Treemacs
+* Treemacs
 
 Slightly increase treemacs width
 #+begin_src emacs-lisp
 (setq treemacs-width 25)
 #+end_src
 
-** Mail
+* Mail
 
 Reading mail with this configuration relies on *offlineimap*. Its goal is to
 download mails, and they will then be read by mu4e.
