@@ -64,6 +64,29 @@ Add margin and remove line indications
 (add-hook 'org-mode-hook 'auto-fill-mode)
 #+end_src
 
+Add a customized function to take screenshot.
+[[https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it][StackOverflow original code]]
+#+begin_src emacs-lisp
+(defun my-org-screenshot ()
+  "Take a screenshot into a time stamped unique-named file in a
+  subdirectory named as the org-buffer and insert a link to this file."
+  (interactive)
+  (setq path-no-ext (file-name-sans-extension buffer-file-name))
+  (setq filename-no-ext (file-name-nondirectory path-no-ext))
+  (setq screenshots-dir-name (concat path-no-ext "-screenshots"))
+  (if (not (file-directory-p screenshots-dir-name))
+      (make-directory screenshots-dir-name))
+  (setq file-path
+        (concat
+         (make-temp-name
+          (concat screenshots-dir-name "/" filename-no-ext "_"
+                  (format-time-string "%Y%m%d_%H%M%S_")) ) ".png"))
+  (call-process "import" nil nil nil file-path)
+  (insert (concat "[[" file-path "]]"))
+  (org-display-inline-images))
+#+end_src
+
+
 Export with properties.
 #+begin_src emacs-lisp
 (setq org-export-with-properties t)
@@ -375,6 +398,7 @@ theme uses spacemacs-light. Then faces are modified.
         (load-theme 'spacemacs-light)
         (book-faces "black" "white" "ETBembo"))
     (progn
+      (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
       (load-theme 'doom-vibrant)
       (book-faces "white" "black" "Fira Mono"))
     )
