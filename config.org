@@ -19,10 +19,21 @@ Adding name and mail address.
 #+end_src
 
 Using Fira Mono font and fixing size for normal and variable-pitch mode and setting doom theme.
+Doom theme is set according to text inside ~/.config/.theme file.
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Fira Mono" :size 20 :weight 'semi-light)
       doom-variable-pitch-font (font-spec :family "Fira Mono" :size 22))
-(setq doom-theme 'doom-vibrant)
+
+(defun get-string-from-file (filePath)
+  "Return filePath's file content."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
+
+(setq theme_value (string-trim (get-string-from-file "~/.config/.theme")))
+(if (string= theme_value "white")
+    (load-theme 'spacemacs-light t)
+  (load-theme 'doom-vibrant t))
 #+end_src
 
 Setting org directory.
@@ -77,13 +88,12 @@ Add a customized function to take screenshot.
   (if (not (file-directory-p screenshots-dir-name))
       (make-directory screenshots-dir-name))
   (setq file-path
-        (concat
-         (make-temp-name
-          (concat screenshots-dir-name "/" filename-no-ext "_"
-                  (format-time-string "%Y%m%d_%H%M%S_")) ) ".png"))
+          (concat filename-no-ext "-screenshots/"
+                  (format-time-string "%Y%m%d_%H%M%S.png")))
   (call-process "import" nil nil nil file-path)
-  (insert (concat "[[" file-path "]]"))
-  (org-display-inline-images))
+  (setq caption (read-string "Caption: "))
+  (insert (concat "#+CAPTION: " caption "\n"))
+  (insert (concat "[[file:" file-path "]]")))
 #+end_src
 
 
