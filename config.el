@@ -1,56 +1,24 @@
-#+TITLE: Config
-
-This is my Doom Emacs configuration files. They are greatly inspired from various sources:
-- [[https://lepisma.xyz/2017/10/28/ricing-org-mode/][Ricing up Org mode - Abhinav Tushar]]
-- [[https://github.com/alarsyo/doom-conf][Alarsyo Github]]
-- [[https://config.daviwil.com/emacs][daviwil configuration]]
-
-* General configuration
-
-Enable lexical binding.
-#+begin_SRC emacs-lisp
 ;;; -*- lexical-binding: t; -*-
-#+end_src
 
-Adding name and mail address.
-#+begin_src emacs-lisp
 (setq user-full-name "Augustin Thiercelin"
       user-mail-address "augustin.thiercelin@epita.fr")
-#+end_src
 
-Setting org directory.
-#+begin_src emacs-lisp
 (setq org-directory "~/org/")
-#+end_src
 
-Determine style of line numbers and display battery in mode bar.
-#+begin_src emacs-lisp
 (display-battery-mode 1)
 (setq display-line-numbers-type t)
-#+end_src
 
-Set transparency
-#+begin_src emacs-lisp
 (set-frame-parameter (selected-frame) 'alpha '(95 . 95))
 (add-to-list 'default-frame-alist '(alpha . (95 . 95)))
-#+end_src
 
-Hide hidden files using =dired-omit-mode= in dired
-#+begin_src emacs-lisp
 (require 'dired-x)
 (setq dired-omit-files "^\\...+$")
 (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
-#+end_src
 
-Bind =org-mark-ring-goto=
-#+begin_src emacs-lisp
 (map! :leader
       :desc "Go back to position before clicking link"
       "p p" #'org-mark-ring-goto)
-#+end_src
 
-Japanese input bindings
-#+begin_src emacs-lisp
 (map! :leader
       :desc "Japanese"
       "j j" (cmd! (set-input-method "japanese"))
@@ -58,14 +26,7 @@ Japanese input bindings
       "j h" (cmd! (set-input-method "japanese-hiragana"))
       :desc "Japanese Katakana"
       "j k" (cmd! (set-input-method "japanese-katakana")))
-#+end_src
 
-* Theme
-
-Swap theme function between a light and a dark theme. Light theme is greatly
-inspired from [[https://lepisma.xyz/2017/10/28/ricing-org-mode/][this website]]. Dark theme uses doom-vibrant theme as a base, light
-theme uses spacemacs-light. Then faces are modified.
-#+begin_src emacs-lisp
 (defun book-faces (org-foreground org-background font)
   "Change org-faces"
   (interactive)
@@ -125,11 +86,7 @@ theme uses spacemacs-light. Then faces are modified.
     (black-theme)
     )
   )
-#+end_src
 
-Using Fira Mono font and fixing size for normal and variable-pitch mode and setting doom theme.
-Doom theme is set according to text inside ~/.config/.theme file.
-#+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Fira Mono" :size 20 :weight 'semi-light)
       doom-variable-pitch-font (font-spec :family "Fira Mono" :size 22))
 
@@ -143,33 +100,21 @@ Doom theme is set according to text inside ~/.config/.theme file.
 (if (string= theme_value "white")
     (white-theme)
   (black-theme))
-#+end_src
 
-* Org
-
-Modify check-boxes inside org files.
-#+begin_src emacs-lisp
 (add-hook 'org-mode-hook (lambda ()
    "Beautify Org Checkbox Symbol"
    (push '("[ ]" .  "☐") prettify-symbols-alist)
    (push '("[X]" . "☑" ) prettify-symbols-alist)
    (push '("[-]" . "❍" ) prettify-symbols-alist)
    (prettify-symbols-mode)))
-#+end_src
 
-Add margin and remove line indications
-#+begin_src emacs-lisp
 (setq visual-fill-column-width 110
       visual-fill-column-center-text t)
 
 (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode 0)))
 (add-hook 'org-mode-hook 'visual-fill-column-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
-#+end_src
 
-Add a customized function to take screenshot.
-[[https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it][StackOverflow original code]]
-#+begin_src emacs-lisp
 (defun my-org-screenshot ()
   "Take a screenshot into a time stamped unique-named file in a
   subdirectory named as the org-buffer and insert a link to this file."
@@ -186,24 +131,10 @@ Add a customized function to take screenshot.
   (setq caption (read-string "Caption: "))
   (insert (concat "#+CAPTION: " caption "\n"))
   (insert (concat "[[file:" file-path "]]")))
-#+end_src
 
-
-Export with properties and add options for minted latex export.
-#+begin_src emacs-lisp
 (setq org-export-with-properties t)
 (setq org-latex-minted-options '(("linenos" "true") ("frame" "single")))
-#+end_src
 
-Add captures templates for org:
-- *Todo* templates add a checkbox in dedicated sections inside the
-    *~/org/todo.org* file.
-- *Cours* templates open *~/org/roam/cours/cours_index.org* file to add an
-   entry
-- *Veille* templates open *~/org/veille.org* file to add a checkbox with the current
-    day timetamp. A formated link with the clipboard content is set, needing a
-    link description.
-#+begin_src emacs-lisp
 (setq org-capture-templates
       ;; Create new entry in org/todo.org in corresponding section
       '(("t" "Personal todo" entry
@@ -245,13 +176,7 @@ Add captures templates for org:
          (file+headline "~/org/veille.org" "Veille TCOM")
          "* [ ] %u [[%x][%?]]\n%i\n%a"
          :prepend t)))
-#+end_src
 
-* Org-roam
-
-Basic configuration for roam, enabling version 2, setting the directory and
-adding some bindings.
-#+begin_src emacs-lisp
 (use-package org-roam
   :ensure t
   :init
@@ -267,45 +192,33 @@ adding some bindings.
          ("C-c n j" . org-roam-dailies-capture-today))
   :config
   (org-roam-setup))
-#+end_src
 
-Add org-roam templates:
-- *default* creating a file with a title and the current date
-- *cours* creating a file inside *~/org/roam/cours* prompting for the name of
-    the professor and adding readtheorg export option.
-- *misc* creating a file inside *~/org/roam/misc* adding readthe org export option.
-#+begin_src emacs-lisp
 (setq org-roam-capture-templates
       '(("d" "default" plain "%?"
          :if-new (file+head "${slug}.org"
                             "#+TITLE: ${title}
-,#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]")
+#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]")
          :unnarrowed t)
         ("c" "cours" plain "%?"
          :if-new (file+head "cours/${slug}.org"
                             "#+TITLE: ${title}
-,#+DATE: %U
-,#+PROFESSOR: %^{PROF|FIXME}
-,#+FILETAGS: :cours:
-,#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
-,#+HTML_LINK_HOME: cours_index.html
-,#+HTML_LINK_LINK_UP: cours_index.html")
+#+DATE: %U
+#+PROFESSOR: %^{PROF|FIXME}
+#+FILETAGS: :cours:
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+HTML_LINK_HOME: cours_index.html
+#+HTML_LINK_LINK_UP: cours_index.html")
          :unnarrowed t)
         ("m" "misc" plain "%?"
          :if-new (file+head "misc/${slug}.org"
                             "#+TITLE: ${title}
-,#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
-,#+FILETAGS: :misc:
+#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
+#+FILETAGS: :misc:
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
-,#+HTML_LINK_HOME: misc_index.html
-,#+HTML_LINK_LINK_UP: misc_index.html'")
+#+HTML_LINK_HOME: misc_index.html
+#+HTML_LINK_LINK_UP: misc_index.html'")
          :unnarrowed t)))
-#+end_src
 
-Add templates for roam-daily:
-- *cours* adding it in section "Notes de cours"
-- *misc* adding it in section "Notes generales"
-#+begin_src emacs-lisp
 (setq org-roam-dailies-capture-templates
       '(("c" "cours" entry "* %?"
          :if-new (file+head "daily/%<%Y-%m-%d>.org"
@@ -316,14 +229,7 @@ Add templates for roam-daily:
          :file-name "daily/%<%Y-%m-%d>.org"
          :head "#+TITLE: %<%Y-%m-%d>\n"
          :olp ("Notes generales"))))
-#+end_src
 
-* Publish
-
-Setup two project to publish:
-- *cours* exporting all org-roam files with ressources from *~/org/roam/cours*
-- *misc* exporting all org-roam file with ressources from *~/org/roam/misc*
-#+begin_src emacs-lisp
 (require 'ox-publish)
 (setq org-publish-project-alist
       '(
@@ -357,15 +263,9 @@ Setup two project to publish:
          :publishing-function org-publish-attachment)
         ("cours" :components ("cours-note" "cours-static"))
         ("misc" :components ("misc-note" "misc-static"))))
-#+end_src
 
-Force pushing even if files didn't change
-#+begin_src emacs-lisp
 (setq org-publish-use-timestamps-flag 'nil)
-#+end_src
 
-Honestly, I don't remember those lines
-#+begin_src emacs-lisp
 (require 'ox-latex)
 (add-to-list 'org-latex-packages-alist '("" "minted"))
 (setq org-latex-listings 'minted)
@@ -374,12 +274,7 @@ Honestly, I don't remember those lines
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-#+end_src
 
-* Presentation
-
-Basic configuration for present-mode, stolen from daviwil configuration
-#+begin_src emacs-lisp
 (defun dw/org-present-prepare-slide ()
   (org-overview)
   (org-show-entry)
@@ -422,19 +317,11 @@ Basic configuration for present-mode, stolen from daviwil configuration
          ("C-c C-k" . dw/org-present-prev))
   :hook ((org-present-mode . dw/org-present-hook)
          (org-present-mode-quit . dw/org-present-quit-hook)))
-#+end_src
 
-* Org customization
-
-Remove bullets headline
-#+begin_src emacs-lisp
 (after! org
   (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 (add-hook 'org-mode-hook 'org-superstar-mode)
-#+end_src
 
-Multiple display configuration
-#+begin_src emacs-lisp
 ;; Multiple display configuration
 (setq org-startup-indented t
       line-spacing 0.1
@@ -446,23 +333,12 @@ Multiple display configuration
       org-fontify-whole-heading-line t
       org-fontify-done-headline t
       org-fontify-quote-and-verse-blocks t)
-#+end_src
 
-Setup variable-pitch-mode inside org-mode
-#+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'variable-pitch-mode)
-#+end_src
 
-* Centaur-tabs
-
-Modify visual tabs bar.
-#+begin_src emacs-lisp
 (setq centaur-tabs-set-bar 'under)
 (setq x-underline-at-descent-line t)
-#+end_src
 
-Add bindings to navigate groups and tab.
-#+begin_src emacs-lisp
 (map! :leader :desc "Switch to next group" "t n" #'centaur-tabs-forward-group
       :leader :desc "Switch to previous group" "t p" #'centaur-tabs-backward-group
       :leader :desc "Create a new tab" "t t" #'centaur-tabs--create-new-tab
@@ -470,25 +346,11 @@ Add bindings to navigate groups and tab.
       :leader :desc "Kill this buffer" "t k" #'centaur-tabs--kill-this-buffer-dont-ask
       :leader :desc "Kill all buffers in group" "t a" #'centaur-tabs-kill-all-buffers-in-current-group
       :leader :desc "Kill all buffers in group except current" "t e" #'centaur-tabs-kill-other-buffers-in-current-group)
-#+end_src
 
-* Treemacs
-
-Slightly increase treemacs width
-#+begin_src emacs-lisp
 (setq treemacs-width 25)
-#+end_src
 
-* Mail
-
-Reading mail with this configuration relies on *offlineimap*. Its goal is to
-download mails, and they will then be read by mu4e.
-#+begin_src emacs-lisp
 (setq +mu4e-backend 'offlineimap)
-#+end_src
 
-Set an email account
-#+begin_src emacs-lisp
 (set-email-account! "epita.fr"
   '((mu4e-sent-folder       . "/Sent")
     (mu4e-drafts-folder     . "/Drafts")
@@ -498,34 +360,18 @@ Set an email account
     (smtpmail-smtp-user     . "augustin.thiercelin@epita.fr")
     (user-mail-address      . "augustin.thiercelin@epita.fr"))
   t)
-#+end_src
 
-Set mu4e default to send mail from emacs. Kill buffer after sending a mail, and
-use mu4e user agent.
-#+begin_src emacs-lisp
 (set-variable 'read-mail-command 'mu4e)
 (setq message-kill-buffer-on-exit t)
 (setq mail-user-agent 'mu4e-user-agent)
-#+end_src
 
-Set the smtp configuration to send mail
-#+begin_src emacs-lisp
 (setq gnus-select-method '(nntp "news.cri.epita.fr"))
 (setq smtpmail-smtp-server "smtp.office365.com"
       smtpmail-stream-type 'starttls
       smtpmail-smtp-service 587)
-#+end_src
 
-Remove org-msg-mode when writing a mail. This mode is nice since it permits
-to write mail in org mode that will be then transformed into html, but it is
-useless when needing to send plain-text mails.
-#+begin_src emacs-lisp
 (remove-hook! 'mu4e-compose-pre-hook #'org-msg-mode)
-#+end_src
 
-* org static blog
-
-#+begin_src emacs-lisp
 (setq org-static-blog-publish-title "blog n1tsu")
 (setq org-static-blog-publish-url "https://blog.n1tsu.com/")
 (setq org-static-blog-publish-directory "~/org/blog/")
@@ -621,4 +467,3 @@ useless when needing to send plain-text mails.
 (advice-add  'org-static-blog-post-postamble :override #'org-static-blog-post-postamble-override)
 (advice-add  'org-static-blog-get-preview :override #'org-static-blog-get-preview-override)
 (advice-add  'org-static-blog-post-taglist :override #'org-static-blog-post-taglist-override)
-#+end_src
