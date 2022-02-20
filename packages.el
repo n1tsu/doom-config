@@ -69,6 +69,9 @@
 (package! weblorg)
 (package! org-static-blog)
 
+(package! jinko-mode
+  :recipe (:host github :repo "n1tsu/jinko-mode" :files ("jinko-mode.el")))
+
 (package! org-pretty-table
   :recipe (:host github :repo "Fuco1/org-pretty-table") :pin "87772a9469d91770f87bfa788580fca69b9e697a")
 
@@ -79,3 +82,6 @@
 (package! gitignore-mode
 	  :recipe (:host github :repo "magit/git-modes"
 			 :files ("gitignore-mode.el")))
+
+(unpin! org-roam)
+(package! org-roam-ui)
