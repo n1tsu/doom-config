@@ -134,6 +134,7 @@
 
 (setq org-export-with-properties t)
 (setq org-latex-minted-options '(("linenos" "true") ("frame" "single")))
+(setq org-export-with-toc t)
 
 (setq org-capture-templates
       ;; Create new entry in org/todo.org in corresponding section
@@ -197,7 +198,7 @@
       '(("d" "default" plain "%?"
          :if-new (file+head "${slug}.org"
                             "#+TITLE: ${title}
-#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]")
+#+DATE: %U")
          :unnarrowed t)
         ("c" "cours" plain "%?"
          :if-new (file+head "cours/${slug}.org"
@@ -205,19 +206,29 @@
 #+DATE: %U
 #+PROFESSOR: %^{PROF|FIXME}
 #+FILETAGS: :cours:
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+SETUPFILE: org/theme-readtheorg.setup
 #+HTML_LINK_HOME: cours_index.html
 #+HTML_LINK_LINK_UP: cours_index.html")
          :unnarrowed t)
         ("m" "misc" plain "%?"
          :if-new (file+head "misc/${slug}.org"
                             "#+TITLE: ${title}
-#+DATE: [%<%Y-%m-%d %j %H:%M:%S>]
+#+DATE: %U
 #+FILETAGS: :misc:
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+SETUPFILE: org/theme-readtheorg.setup
 #+HTML_LINK_HOME: misc_index.html
-#+HTML_LINK_LINK_UP: misc_index.html'")
-         :unnarrowed t)))
+#+HTML_LINK_LINK_UP: misc_index.html")
+          :unnarrowed t )
+         ("j" "jardinage" plain "%?"
+          :if-new (file+head "jardinage/${slug}.org"
+                             "#+TITLE: ${title}
+#+DATE: %U
+#+FILETAGS: :jardinage:
+#+SETUPFILE: org/theme-readtheorg.setup
+#+HTML_LINK_HOME: jardinage.html")
+          :unnarrowed t)))
+
+(setq org-roam-completion-everywhere t)
 
 (setq org-roam-dailies-capture-templates
       '(("c" "cours" entry "* %?"
@@ -243,7 +254,7 @@
          :auto-preamble t)
         ("cours-static"
          :base-directory "~/org/roam/cours"
-         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|setup"
          :publishing-directory "~/cours/public_html/"
          :recursive t
          :publishing-function org-publish-attachment)
@@ -257,12 +268,28 @@
          :auto-preamble t)
         ("misc-static"
          :base-directory "~/org/roam/misc"
-         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|setup"
          :publishing-directory "~/misc/public_html/"
          :recursive t
          :publishing-function org-publish-attachment)
+        ("jardinage-note"
+         :base-directory "~/org/roam/jardinage"
+         :base-extension "org"
+         :publishing-directory "~/jardinage/public_html/"
+         :recursive t
+         :publishing-function org-html-publish-to-html
+         :headline-levels 4
+         :auto-preamble t)
+        ("jardinage-static"
+         :base-directory "~/org/roam/jardinage"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|setup"
+         :publishing-directory "~/jardinage/public_html/"
+         :recursive t
+         :publishing-function org-publish-attachment)
+        ("jardinage" :components ("jardinage-note" "jardinage-static"))
         ("cours" :components ("cours-note" "cours-static"))
-        ("misc" :components ("misc-note" "misc-static"))))
+        ("misc" :components ("misc-note" "misc-static"))
+        ("all" :components ("cours" "misc" "jardinage"))))
 
 (setq org-publish-use-timestamps-flag 'nil)
 
@@ -378,7 +405,6 @@
 (setq org-static-blog-posts-directory "~/org/blog/posts/")
 (setq org-static-blog-drafts-directory "~/org/blog/drafts/")
 (setq org-static-blog-enable-tags t)
-(setq org-export-with-toc nil)
 (setq org-export-with-section-numbers nil)
 (setq org-static-blog-use-preview t)
 
@@ -474,13 +500,36 @@
     :after org-roam)
 
 (use-package! org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
+    :after org-roam
     :config
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
+
+(defun org-roam-node-find-noselect (title)
+  "Get a node ID by its title, whether original title or alias"
+  (caar (org-roam-db-query [:select id
+                            :from [:select [(as node_id id)
+                                            (as alias title)]
+                                   :from aliases
+                                   :union-all
+                                   :select [id title]
+                                   :from nodes]
+                            :where (= title $s1)
+                            :limit 1] title)))
+
+;; Tempary add this function removed from org-roam but needed for org-roam-ui
+(defun org-roam-node-find-noselect (node &optional force)
+  "Navigate to the point for NODE, and return the buffer.
+If NODE is already visited, this won't automatically move the
+point to the beginning of the NODE, unless FORCE is non-nil."
+  (unless (org-roam-node-file node)
+    (user-error "Node does not have corresponding file"))
+  (let ((buf (find-file-noselect (org-roam-node-file node))))
+    (with-current-buffer buf
+      (when (or force
+                (not (equal (org-roam-node-id node)
+                            (org-roam-id-at-point))))
+        (goto-char (org-roam-node-point node))))
+    buf))

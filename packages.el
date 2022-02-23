@@ -76,12 +76,20 @@
   :recipe (:host github :repo "Fuco1/org-pretty-table") :pin "87772a9469d91770f87bfa788580fca69b9e697a")
 
 (package! gitconfig-mode
-	  :recipe (:host github :repo "magit/git-modes"
-			 :files ("gitconfig-mode.el")))
+  :recipe (:host github :repo "magit/git-modes" :files ("gitconfig-mode.el")))
 
 (package! gitignore-mode
-	  :recipe (:host github :repo "magit/git-modes"
-			 :files ("gitignore-mode.el")))
+  :recipe (:host github :repo "magit/git-modes" :files ("gitignore-mode.el")))
+
+(package! plz
+  :recipe (:host github :repo "alphapapa/plz.el"))
+
+(package! ement
+  :recipe (:host github :repo "alphapapa/ement.el"))
 
 (unpin! org-roam)
 (package! org-roam-ui)
+
+(package! emacs-application-framework
+  :recipe (:host github :repo "manateelazycat/emacs-application-framework"
+           :files ("eaf.el" "src/lisp/*.el")))
