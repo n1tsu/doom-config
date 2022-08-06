@@ -219,6 +219,15 @@
 #+HTML_LINK_HOME: misc_index.html
 #+HTML_LINK_LINK_UP: misc_index.html")
           :unnarrowed t )
+        ("n" "network" plain "%?"
+         :if-new (file+head "network/${slug}.org"
+                            "#+TITLE: ${title}
+#+DATE: %U
+#+FILETAGS: :network:
+#+SETUPFILE: org/theme-readtheorg.setup
+#+HTML_LINK_HOME: network_index.html
+#+HTML_LINK_LINK_UP: network_index.html")
+          :unnarrowed t )
          ("j" "jardinage" plain "%?"
           :if-new (file+head "jardinage/${slug}.org"
                              "#+TITLE: ${title}
@@ -272,6 +281,20 @@
          :publishing-directory "~/misc/public_html/"
          :recursive t
          :publishing-function org-publish-attachment)
+        ("network-note"
+         :base-directory "~/org/roam/network"
+         :base-extension "org"
+         :publishing-directory "~/network/public_html/"
+         :recursive t
+         :publishing-function org-html-publish-to-html
+         :headline-levels 4
+         :auto-preamble t)
+        ("network-static"
+         :base-directory "~/org/roam/network"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|setup"
+         :publishing-directory "~/network/public_html/"
+         :recursive t
+         :publishing-function org-publish-attachment)
         ("jardinage-note"
          :base-directory "~/org/roam/jardinage"
          :base-extension "org"
@@ -289,6 +312,7 @@
         ("jardinage" :components ("jardinage-note" "jardinage-static"))
         ("cours" :components ("cours-note" "cours-static"))
         ("misc" :components ("misc-note" "misc-static"))
+        ("network" :components ("network-note" "network-static"))
         ("all" :components ("cours" "misc" "jardinage"))))
 
 (setq org-publish-use-timestamps-flag 'nil)
@@ -533,3 +557,11 @@ point to the beginning of the NODE, unless FORCE is non-nil."
                             (org-roam-id-at-point))))
         (goto-char (org-roam-node-point node))))
     buf))
+
+(setq lsp-keymap-prefix "C-c l")
+
+(after! dap-mode
+  (setq dap-python-debugger 'debugpy)
+  (setq dap-python-executable "python3"))
+
+(require 'dap-python)

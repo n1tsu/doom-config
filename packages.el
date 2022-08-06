@@ -68,9 +68,14 @@
 (package! command-log-mode)
 (package! weblorg)
 (package! org-static-blog)
+(package! dap-mode)
+(package! lsp-ui)
 
 (package! jinko-mode
   :recipe (:host github :repo "n1tsu/jinko-mode" :files ("jinko-mode.el")))
+
+(package! openapi-viewer-mode
+  :recipe (:host github :repo "n1tsu/openapi-viewer-mode" :files ("openapi-viewer-mode.el")))
 
 (package! org-pretty-table
   :recipe (:host github :repo "Fuco1/org-pretty-table") :pin "87772a9469d91770f87bfa788580fca69b9e697a")
