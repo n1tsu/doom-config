@@ -518,8 +518,6 @@
 (advice-add  'org-static-blog-get-preview :override #'org-static-blog-get-preview-override)
 (advice-add  'org-static-blog-post-taglist :override #'org-static-blog-post-taglist-override)
 
-(require 'jinko-mode)
-
 (use-package! websocket
     :after org-roam)
 
@@ -543,7 +541,7 @@
                             :where (= title $s1)
                             :limit 1] title)))
 
-;; Tempary add this function removed from org-roam but needed for org-roam-ui
+;; Temporary added this function removed from org-roam but needed for org-roam-ui
 (defun org-roam-node-find-noselect (node &optional force)
   "Navigate to the point for NODE, and return the buffer.
 If NODE is already visited, this won't automatically move the
@@ -558,10 +556,32 @@ point to the beginning of the NODE, unless FORCE is non-nil."
         (goto-char (org-roam-node-point node))))
     buf))
 
-(setq lsp-keymap-prefix "C-c l")
+(require 'jinko-mode)
 
 (after! dap-mode
   (setq dap-python-debugger 'debugpy)
   (setq dap-python-executable "python3"))
 
-(require 'dap-python)
+(setq lsp-keymap-prefix "C-c l")
+
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-peek-enable t
+        lsp-ui-doc-max-height 8
+        lsp-ui-doc-max-width 35
+        lsp-ui-doc-show-with-mouse nil
+        lsp-ui-doc-position 'at-point
+        lsp-ui-sideline-ignore-duplicate t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-doc-enable nil)
+  :general
+  (:keymaps 'lsp-mode-map
+   [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
+   [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (:keymaps 'lsp-ui-peek-mode-map
+   "j"   #'lsp-ui-peek--select-next
+   "k"   #'lsp-ui-peek--select-prev
+   "C-j" #'lsp-ui-peek--select-next-file
+   "C-k" #'lsp-ui-peek--select-prev-file))

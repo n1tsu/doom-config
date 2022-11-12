@@ -4,6 +4,7 @@ This is my Doom Emacs configuration files. They are greatly inspired from variou
 - [[https://lepisma.xyz/2017/10/28/ricing-org-mode/][Ricing up Org mode - Abhinav Tushar]]
 - [[https://github.com/alarsyo/doom-conf][Alarsyo Github]]
 - [[https://config.daviwil.com/emacs][daviwil configuration]]
+- [[https://github.com/smsegal/emacs-config/blob/main/modules/%2Blsp.el][smsegal configuration]]
 
 * General configuration
 
@@ -42,7 +43,7 @@ Hide hidden files using =dired-omit-mode= in dired
 (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
 #+end_src
 
-Bind =org-mark-ring-goto=
+Bind =org-mark-ring-goto= (leader key is SPACE)
 #+begin_src emacs-lisp
 (map! :leader
       :desc "Go back to position before clicking link"
@@ -188,7 +189,6 @@ Add a customized function to take screenshot.
   (insert (concat "[[file:" file-path "]]")))
 #+end_src
 
-
 Export with properties and add options for minted latex export.
 #+begin_src emacs-lisp
 (setq org-export-with-properties t)
@@ -202,7 +202,7 @@ Add captures templates for org:
 - *Cours* templates open *~/org/roam/cours/cours_index.org* file to add an
    entry
 - *Veille* templates open *~/org/veille.org* file to add a checkbox with the current
-    day timetamp. A formated link with the clipboard content is set, needing a
+    day timestamp. A formatted link with the clipboard content is set, needing a
     link description.
 #+begin_src emacs-lisp
 (setq org-capture-templates
@@ -274,7 +274,7 @@ Add org-roam templates:
 - *default* creating a file with a title and the current date
 - *cours* creating a file inside *~/org/roam/cours* prompting for the name of
     the professor and adding readtheorg export option.
-- *misc* creating a file inside *~/org/roam/misc* adding readthe org export option.
+- *misc* creating a file inside *~/org/roam/misc* adding readtheorg export option.
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
       '(("d" "default" plain "%?"
@@ -341,8 +341,10 @@ Add templates for roam-daily:
 * Publish
 
 Setup two project to publish:
-- *cours* exporting all org-roam files with ressources from *~/org/roam/cours*
-- *misc* exporting all org-roam file with ressources from *~/org/roam/misc*
+- *cours* exporting all org-roam files with resources from *~/org/roam/cours*
+- *misc* exporting all org-roam file with resources from *~/org/roam/misc*
+- *jardinage* exporting all org-roam files with resources from *~/org/roam/jardinage*
+- *network* exporting all org-roam file with resources from *~/org/roam/network*
 #+begin_src emacs-lisp
 (require 'ox-publish)
 (setq org-publish-project-alist
@@ -533,7 +535,7 @@ Slightly increase treemacs width
 * Mail
 
 Reading mail with this configuration relies on *offlineimap*. Its goal is to
-download mails, and they will then be read by mu4e.
+download mails to be then be read by mu4e.
 #+begin_src emacs-lisp
 (setq +mu4e-backend 'offlineimap)
 #+end_src
@@ -673,12 +675,6 @@ useless when needing to send plain-text mails.
 (advice-add  'org-static-blog-post-taglist :override #'org-static-blog-post-taglist-override)
 #+end_src
 
-* jinko-mode
-
-#+begin_src elisp
-(require 'jinko-mode)
-#+end_src
-
 * Org roam UI
 
 #+begin_src elisp
@@ -705,7 +701,7 @@ useless when needing to send plain-text mails.
                             :where (= title $s1)
                             :limit 1] title)))
 
-;; Tempary add this function removed from org-roam but needed for org-roam-ui
+;; Temporary added this function removed from org-roam but needed for org-roam-ui
 (defun org-roam-node-find-noselect (node &optional force)
   "Navigate to the point for NODE, and return the buffer.
 If NODE is already visited, this won't automatically move the
@@ -721,17 +717,45 @@ point to the beginning of the NODE, unless FORCE is non-nil."
     buf))
 #+end_src
 
-* Python
+* Programming
 
+Add mode for [[https://github.com/jinko-core/jinko][Jinko]]
 #+begin_src elisp
-(setq lsp-keymap-prefix "C-c l")
+(require 'jinko-mode)
+#+end_src
 
+Configure debugger DAP
+#+begin_src elisp
 (after! dap-mode
   (setq dap-python-debugger 'debugpy)
   (setq dap-python-executable "python3"))
+#+end_src
 
-(require 'dap-python)
+Configure LSP, add keybindings from [[https://github.com/smsegal/emacs-config/blob/main/modules/%2Blsp.el][this config]]
+#+begin_src elisp
+(setq lsp-keymap-prefix "C-c l")
 
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-peek-enable t
+        lsp-ui-doc-max-height 8
+        lsp-ui-doc-max-width 35
+        lsp-ui-doc-show-with-mouse nil
+        lsp-ui-doc-position 'at-point
+        lsp-ui-sideline-ignore-duplicate t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-doc-enable nil)
+  :general
+  (:keymaps 'lsp-mode-map
+   [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
+   [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (:keymaps 'lsp-ui-peek-mode-map
+   "j"   #'lsp-ui-peek--select-next
+   "k"   #'lsp-ui-peek--select-prev
+   "C-j" #'lsp-ui-peek--select-next-file
+   "C-k" #'lsp-ui-peek--select-prev-file))
 #+end_src
 
 * COMMENT Emacs Application Framework
@@ -755,6 +779,6 @@ point to the beginning of the NODE, unless FORCE is non-nil."
 (require 'eaf-rss-reader)
 (require 'eaf-jupyter)
 (require 'eaf-image-viewer)
-(require 'eaf-markdown-previewer)
+(require 'eaf-markdown)
 (require 'eaf-vue-demo)
 #+end_src
