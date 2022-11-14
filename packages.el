@@ -68,8 +68,8 @@
 (package! command-log-mode)
 (package! weblorg)
 (package! org-static-blog)
-(package! dap-mode)
-(package! lsp-ui)
+(package! with-venv)
+(package! code-review)
 
 (package! jinko-mode
   :recipe (:host github :repo "n1tsu/jinko-mode" :files ("jinko-mode.el")))

@@ -1,4 +1,5 @@
 ;;; -*- lexical-binding: t; -*-
+(remove-hook 'after-init-hook #'debian-ispell-set-startup-menu)
 
 (setq user-full-name "Augustin Thiercelin"
       user-mail-address "augustin.thiercelin@epita.fr")
@@ -44,7 +45,7 @@
     `(org-document-title :inherit nil :family ,font :height 1.8 :foreground ,org-foreground :underline nil)
     `(org-document-info :height 1.2 :slant italic)
     `(org-headline-done :family ,font :strike-through t)
-    `(org-block :background ,block-background :family "Fira Mono" :height 0.7 :foreground ,org-foreground)
+    `(org-block :background ,block-background :family "Fira Code" :height 0.7 :foreground ,org-foreground)
     `(org-block-begin-line :background nil :height 0.8 :family "sans-mono-font" :foreground "slate")
     `(org-block-end-line :background nil :height 0.8 :family "sans-mono-font" :foreground "slate")
     `(org-document-info-keyword :height 0.8 :foreground "gray")
@@ -69,7 +70,7 @@
 (defun black-theme ()
   (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
   (load-theme 'doom-vibrant t)
-  (book-faces "white" "black" "Fira Mono")
+  (book-faces "white" "black" "Fira Code")
   )
 
 (defun white-theme ()
@@ -87,8 +88,8 @@
     )
   )
 
-(setq doom-font (font-spec :family "Fira Mono" :size 20 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Fira Mono" :size 22))
+(setq doom-font (font-spec :family "Fira Code" :size 16 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Fira Code" :size 16))
 
 (defun get-string-from-file (filePath)
   "Return filePath's file content."
@@ -389,6 +390,7 @@
 
 (setq centaur-tabs-set-bar 'under)
 (setq x-underline-at-descent-line t)
+(after! centaur-tabs (centaur-tabs-group-by-projectile-project))
 
 (map! :leader :desc "Switch to next group" "t n" #'centaur-tabs-forward-group
       :leader :desc "Switch to previous group" "t p" #'centaur-tabs-backward-group
@@ -518,8 +520,6 @@
 (advice-add  'org-static-blog-get-preview :override #'org-static-blog-get-preview-override)
 (advice-add  'org-static-blog-post-taglist :override #'org-static-blog-post-taglist-override)
 
-(require 'jinko-mode)
-
 (use-package! websocket
     :after org-roam)
 
@@ -543,7 +543,7 @@
                             :where (= title $s1)
                             :limit 1] title)))
 
-;; Tempary add this function removed from org-roam but needed for org-roam-ui
+;; Temporary added this function removed from org-roam but needed for org-roam-ui
 (defun org-roam-node-find-noselect (node &optional force)
   "Navigate to the point for NODE, and return the buffer.
 If NODE is already visited, this won't automatically move the
@@ -558,10 +558,52 @@ point to the beginning of the NODE, unless FORCE is non-nil."
         (goto-char (org-roam-node-point node))))
     buf))
 
-(setq lsp-keymap-prefix "C-c l")
+(require 'jinko-mode)
 
 (after! dap-mode
   (setq dap-python-debugger 'debugpy)
   (setq dap-python-executable "python3"))
 
-(require 'dap-python)
+(setq lsp-keymap-prefix "C-c l")
+
+(add-hook 'python-mode #'hs-minor-mode)
+
+(map! :leader :desc "Hide current block" "a h" #'hs-hide-block
+      :leader :desc "Show current block" "a s" #'hs-show-block
+      :leader :desc "Hide all blocks" "a e" #'hs-hide-all
+      :leader :desc "Show all blocks" "a r" #'hs-show-all)
+
+(require 'openapi-viewer-mode)
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-peek-enable t
+        lsp-ui-doc-max-height 8
+        lsp-ui-doc-max-width 35
+        lsp-ui-doc-show-with-mouse nil
+        lsp-ui-doc-position 'at-point
+        lsp-ui-sideline-ignore-duplicate t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-doc-enable nil)
+  :general
+  (:keymaps 'lsp-mode-map
+   [remap xref-find-definitions] #'lsp-ui-peek-find-definitions
+   [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (:keymaps 'lsp-ui-peek-mode-map
+   "j"   #'lsp-ui-peek--select-next
+   "k"   #'lsp-ui-peek--select-prev
+   "C-j" #'lsp-ui-peek--select-next-file
+   "C-k" #'lsp-ui-peek--select-prev-file))
+
+;; forge
+(with-eval-after-load 'forge
+  (push '("git.gatewatcher.com" "git.gatewatcher.com/api/v4"
+          "git.gatewatcher.com" forge-gitlab-repository)
+        forge-alist)
+)
+(with-eval-after-load 'code-review
+  (setq code-review-gitlab-host "git.gatewatcher.com/api"
+        code-review-gitlab-graphql-host "git.gatewatcher.com/api")
+)
+(setq code-review-log-raw-request-responses t)
